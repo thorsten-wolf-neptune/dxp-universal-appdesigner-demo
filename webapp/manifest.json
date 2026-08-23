@@ -1,0 +1,71 @@
+{
+  "_version": "1.65.0",
+  "sap.app": {
+    "id": "com.imported.neptune_flight",
+    "type": "application",
+    "title": "Neptune Flight Demo App",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "description": "Neptune Flight Demo App"
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "rootView": {
+      "viewName": "com.imported.neptune_flight.view.Main",
+      "type": "XML",
+      "id": "app",
+      "async": true
+    },
+    "dependencies": {
+      "minUI5Version": "1.120.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.ui.layout": {}
+      }
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "com.imported.neptune_flight.i18n.i18n"
+        }
+      },
+      "IT_FLIGHTS": {
+        "type": "sap.ui.model.json.JSONModel"
+      },
+      "WA_FLIGHT_DETAIL": {
+        "type": "sap.ui.model.json.JSONModel"
+      },
+      "WA_ADDITIONAL_INFO": {
+        "type": "sap.ui.model.json.JSONModel"
+      },
+      "WA_AVAILABILITY": {
+        "type": "sap.ui.model.json.JSONModel"
+      },
+      "IT_SBOOK": {
+        "type": "sap.ui.model.json.JSONModel"
+      },
+      "selectAUART": {
+        "type": "sap.ui.model.json.JSONModel"
+      },
+      "barData": {
+        "type": "sap.ui.model.json.JSONModel"
+      },
+      "colData": {
+        "type": "sap.ui.model.json.JSONModel"
+      },
+      "pieData": {
+        "type": "sap.ui.model.json.JSONModel"
+      }
+    }
+  }
+}
