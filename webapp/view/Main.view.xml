@@ -1,4 +1,4 @@
-<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:form="sap.ui.layout.form" controllerName="com.imported.neptune_flight.controller.Main" displayBlock="true" height="100%">
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:form="sap.ui.layout.form" controllerName="com.imported.neptune_flight.controller.Main" displayBlock="true" height="99%9">
     <SplitApp id="oApp">
         <masterPages>
             <Page id="oPageMaster" titleAlignment="Center">
