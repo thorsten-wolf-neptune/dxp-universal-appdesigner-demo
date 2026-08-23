@@ -1,0 +1,197 @@
+import type UIComponent from "sap/ui/core/UIComponent";
+import { applyStoreData, createStore, fillComponentModels, registerAppServiceWorker } from "./dxpData";
+
+const catalog = {
+    "version": 1,
+    "appId": "com.imported.neptune_flight",
+    "stores": [
+        {
+            "id": "IT_FLIGHTS",
+            "kind": "json",
+            "role": "model",
+            "load": "onlineOnEmptyCache",
+            "persistence": "indexeddb",
+            "filledBy": "GET_FLIGHTS",
+            "shape": []
+        },
+        {
+            "id": "WA_FLIGHT_DETAIL",
+            "kind": "json",
+            "role": "model",
+            "load": "onlineOnEmptyCache",
+            "persistence": "indexeddb",
+            "shape": {}
+        },
+        {
+            "id": "WA_ADDITIONAL_INFO",
+            "kind": "json",
+            "role": "model",
+            "load": "onlineOnEmptyCache",
+            "persistence": "indexeddb",
+            "filledBy": "GET_FLIGHT_DETAIL",
+            "shape": {}
+        },
+        {
+            "id": "WA_AVAILABILITY",
+            "kind": "json",
+            "role": "model",
+            "load": "onlineOnEmptyCache",
+            "persistence": "indexeddb",
+            "filledBy": "GET_FLIGHT_DETAIL",
+            "shape": {}
+        },
+        {
+            "id": "IT_SBOOK",
+            "kind": "json",
+            "role": "model",
+            "load": "onlineOnEmptyCache",
+            "persistence": "indexeddb",
+            "filledBy": "GET_FLIGHT_DETAIL",
+            "shape": []
+        },
+        {
+            "id": "selectAUART",
+            "kind": "json",
+            "role": "model",
+            "load": "onlineOnEmptyCache",
+            "persistence": "indexeddb",
+            "filledBy": "INIT_selectAUART",
+            "shape": []
+        },
+        {
+            "id": "GET_FLIGHTS",
+            "kind": "rest",
+            "uri": "https://nad.neptune-software.com/neptune/NEPTUNE_FLIGHT?ajax_id=GET_FLIGHTS&ajax_applid=NEPTUNE_FLIGHT&debug&sap-client=100&field_id=00008",
+            "load": "onlineOnEmptyCache",
+            "persistence": "indexeddb",
+            "connectionId": "nad-apps",
+            "adapterId": "neptune-sap-edition-ajax",
+            "protocol": "rest",
+            "transport": {
+                "kind": "neptune-ajax",
+                "eventId": "GET_FLIGHTS",
+                "applid": "NEPTUNE_FLIGHT",
+                "fieldId": "00008",
+                "receiveKey": "IT_FLIGHTS",
+                "receiveAliases": {
+                    "MasterList": "IT_FLIGHTS",
+                    "oPageDetail": "WA_FLIGHT_DETAIL",
+                    "formAdditionalInfo": "WA_ADDITIONAL_INFO",
+                    "formAvailability": "WA_AVAILABILITY",
+                    "tabBooking": "IT_SBOOK"
+                }
+            },
+            "role": "transport",
+            "shape": {}
+        },
+        {
+            "id": "GET_FLIGHT_DETAIL",
+            "kind": "rest",
+            "uri": "https://nad.neptune-software.com/neptune/NEPTUNE_FLIGHT?ajax_id=GET_FLIGHT_DETAIL&ajax_applid=NEPTUNE_FLIGHT&debug&sap-client=100&field_id=00122",
+            "load": "onlineOnEmptyCache",
+            "persistence": "indexeddb",
+            "connectionId": "nad-apps",
+            "adapterId": "neptune-sap-edition-ajax",
+            "protocol": "rest",
+            "transport": {
+                "kind": "neptune-ajax",
+                "eventId": "GET_FLIGHT_DETAIL",
+                "applid": "NEPTUNE_FLIGHT",
+                "fieldId": "00122",
+                "receiveAliases": {
+                    "MasterList": "IT_FLIGHTS",
+                    "oPageDetail": "WA_FLIGHT_DETAIL",
+                    "formAdditionalInfo": "WA_ADDITIONAL_INFO",
+                    "formAvailability": "WA_AVAILABILITY",
+                    "tabBooking": "IT_SBOOK"
+                }
+            },
+            "role": "transport",
+            "initLoad": false,
+            "shape": {}
+        },
+        {
+            "id": "INIT_selectAUART",
+            "kind": "rest",
+            "uri": "https://nad.neptune-software.com/neptune/NEPTUNE_FLIGHT?ajax_id=&ajax_applid=NEPTUNE_FLIGHT&debug&sap-client=100&field_id=00121",
+            "load": "onlineOnEmptyCache",
+            "persistence": "indexeddb",
+            "connectionId": "nad-apps",
+            "adapterId": "neptune-sap-edition-ajax",
+            "protocol": "rest",
+            "transport": {
+                "kind": "neptune-ajax",
+                "eventId": "",
+                "applid": "NEPTUNE_FLIGHT",
+                "fieldId": "00121",
+                "receiveKey": "selectAUART",
+                "receiveAliases": {
+                    "MasterList": "IT_FLIGHTS",
+                    "oPageDetail": "WA_FLIGHT_DETAIL",
+                    "formAdditionalInfo": "WA_ADDITIONAL_INFO",
+                    "formAvailability": "WA_AVAILABILITY",
+                    "tabBooking": "IT_SBOOK"
+                }
+            },
+            "role": "transport",
+            "shape": {}
+        },
+        {
+            "id": "barData",
+            "kind": "json",
+            "role": "model",
+            "load": "online",
+            "persistence": "none",
+            "shape": {}
+        },
+        {
+            "id": "colData",
+            "kind": "json",
+            "role": "model",
+            "load": "online",
+            "persistence": "none",
+            "shape": {}
+        },
+        {
+            "id": "pieData",
+            "kind": "json",
+            "role": "model",
+            "load": "online",
+            "persistence": "none",
+            "shape": {}
+        }
+    ],
+    "serviceWorker": {
+        "enabled": false,
+        "cacheName": "dxp-http-v1",
+        "routes": []
+    }
+};
+
+let host: UIComponent | undefined;
+
+export const dataStore = createStore({
+    appId: catalog.appId || "",
+    stores: catalog.stores,
+    onUpdate: (id, data) => {
+        if (!host) return;
+        applyStoreData(host, dataStore.getSpec(id), id, data);
+    },
+    getSendPayload: (id) => {
+        const spec = dataStore.getSpec(id);
+        const keys = spec && spec.transport && spec.transport.sendKeys;
+        if (!keys || !keys.length || !host) return {};
+        const out: Record<string, unknown> = {};
+        for (const k of keys) {
+            const model = host.getModel(String(k.path || ""));
+            out[k.payloadKey] = model && model.getData ? model.getData() : {};
+        }
+        return out;
+    }
+});
+
+export function initData(component: UIComponent): void {
+    host = component;
+    void fillComponentModels(component, dataStore);
+    registerAppServiceWorker(catalog.serviceWorker);
+}

@@ -1,0 +1,235 @@
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:form="sap.ui.layout.form" controllerName="com.imported.neptune_flight.controller.Main" displayBlock="true" height="100%">
+    <SplitApp id="oApp">
+        <masterPages>
+            <Page id="oPageMaster" titleAlignment="Center">
+                <content>
+                    <PullToRefresh id="pullUpdate" visible="false" refresh=".onPullUpdateRefresh"/>
+                    <Toolbar id="toolMasterSearch">
+                        <content>
+                            <SearchField id="inFilterMaster" placeholder="Search Connection" liveChange=".onInFilterMasterLiveChange"/>
+                        </content>
+                    </Toolbar>
+                    <Toolbar id="toolMasterFlight">
+                        <content>
+                            <Select id="selectAUART" items="{selectAUART>/}" width="100%" change=".onSelectAUARTChange">
+                                <layoutData>
+                                    <ToolbarLayoutData id="ToolbarLayoutData" maxWidth="100%" minWidth="100%"/>
+                                </layoutData>
+                                <items>
+                                    <core:Item key="{selectAUART>Key}" text="{selectAUART>Text}"/>
+                                </items>
+                            </Select>
+                        </content>
+                    </Toolbar>
+                    <List id="MasterList" items="{IT_FLIGHTS>/}" growing="true" growingScrollToLoad="true" growingThreshold="50" mode="SingleSelectMaster" noDataText="No flights" sticky="ColumnHeaders,HeaderToolbar,InfoToolbar" itemPress=".onMasterListItemPress">
+                        <infoToolbar>
+                            <Toolbar id="MasterListToolbar" visible="false">
+                                <content>
+                                    <Text id="MasterListText"/>
+                                </content>
+                            </Toolbar>
+                        </infoToolbar>
+                        <dependents>
+                            <ViewSettingsDialog id="MasterListInfoSetting" title="Options" confirm=".onMasterListInfoSettingConfirm">
+                                <filterItems>
+                                    <ViewSettingsFilterItem id="MasterListFilterPrice" text="Price"/>
+                                </filterItems>
+                            </ViewSettingsDialog>
+                        </dependents>
+                        <items>
+                            <ObjectListItem id="MasterItem" intro="{IT_FLIGHTS>INTRO}" number="{IT_FLIGHTS>PRICE}" numberState="Success" numberUnit="{IT_FLIGHTS>CURR}" title="{IT_FLIGHTS>TITLE}" type="Active"/>
+                        </items>
+                    </List>
+                </content>
+                <customHeader>
+                    <Bar id="headerMaster">
+                        <contentMiddle>
+                            <Title id="txtTitleMaster" text="Flights"/>
+                        </contentMiddle>
+                    </Bar>
+                </customHeader>
+                <footer>
+                    <Bar id="footerMaster">
+                        <contentLeft>
+                            <Button id="butMasterUpdate" icon="sap-icon://synchronize" press=".onButMasterUpdatePress"/>
+                            <Button id="butMasterOptions" icon="sap-icon://group-2" press=".onButMasterOptionsPress"/>
+                        </contentLeft>
+                    </Bar>
+                </footer>
+            </Page>
+        </masterPages>
+        <detailPages>
+            <Page id="oPageDetail" binding="{WA_FLIGHT_DETAIL>/}" titleAlignment="Center">
+                <customHeader>
+                    <Bar id="headerDetail">
+                        <contentLeft>
+                            <Button id="butBackDetail" icon="sap-icon://nav-back" class="sapUiVisibleOnlyOnPhone" press=".onButBackDetailPress"/>
+                        </contentLeft>
+                        <contentMiddle>
+                            <Title id="txtTitleDetail" text="Flight Details"/>
+                        </contentMiddle>
+                        <contentRight>
+                            <Image id="logoDetail" densityAware="true" height="32px" src="/neptune/server/images/neptune-connect-logo.svg"/>
+                        </contentRight>
+                    </Bar>
+                </customHeader>
+                <content>
+                    <ObjectHeader id="pageHeaderDetail" intro="{WA_FLIGHT_DETAIL>AIRLINE},{WA_FLIGHT_DETAIL>CONNECTID}" number="{WA_FLIGHT_DETAIL>PRICE}" numberUnit="{WA_FLIGHT_DETAIL>CURR}" title="{WA_FLIGHT_DETAIL>CITYFROM},{WA_FLIGHT_DETAIL>CITYTO}" titleActive="true">
+                        <attributes>
+                            <ObjectAttribute id="oHeaderDepartDate" active="false" text="{ path: 'WA_FLIGHT_DETAIL>FLIGHTDATE', type: 'sap.ui.model.type.Date', formatOptions: {source:{pattern:'yyyyMMdd'},style:'medium'} }" title="Departure Date"/>
+                            <ObjectAttribute id="oHeaderDepartTime" active="false" text="{ path: 'WA_FLIGHT_DETAIL>DEPTIME', type: 'sap.ui.model.type.Time', formatOptions: {source:{pattern:'HHmmss'},pattern:'HH:mm'} }" title="Departure Time"/>
+                        </attributes>
+                        <statuses>
+                            <ObjectStatus id="oHeaderArrivalDate" text="{ path: 'WA_FLIGHT_DETAIL>ARRDATE', type: 'sap.ui.model.type.Date', formatOptions: {source:{pattern:'yyyyMMdd'},style:'medium'} }" title="Arrival Date"/>
+                            <ObjectStatus id="oHeaderArrivalTime" text="{ path: 'WA_FLIGHT_DETAIL>ARRTIME', type: 'sap.ui.model.type.Time', formatOptions: {source:{pattern:'HHmmss'},pattern:'HH:mm'} }" title="Arrival Time"/>
+                        </statuses>
+                    </ObjectHeader>
+                    <MessageStrip id="oMessageStrip" customIcon="sap-icon://check-availability" showCloseButton="true" showIcon="true" type="None"/>
+                    <IconTabBar id="barDetail" expandable="false">
+                        <items>
+                            <IconTabFilter id="barDetailInfo" icon="sap-icon://hint" key="barDetailInfo">
+                                <content>
+                                    <l:DynamicSideContent id="oDynamicSideContent">
+                                        <l:mainContent>
+                                            <form:SimpleForm id="formAvailability" binding="{WA_AVAILABILITY>/}" columnsM="2" labelSpanM="4" title="Available Seats">
+                                                <form:content>
+                                                    <Label id="lblAvailFirst" text="First"/>
+                                                    <Text id="txtAvailFirst" text="{WA_AVAILABILITY>FIRSTFREE}"/>
+                                                    <Label id="lblAvailBusiness" text="Business"/>
+                                                    <Text id="txtAvailBusiness" text="{WA_AVAILABILITY>BUSINFREE}"/>
+                                                    <Label id="lblAvailEconomy" text="Economy"/>
+                                                    <Text id="txtAvailEconomy" text="{WA_AVAILABILITY>ECONOFREE}"/>
+                                                </form:content>
+                                            </form:SimpleForm>
+                                            <form:SimpleForm id="formAdditionalInfo" binding="{WA_ADDITIONAL_INFO>/}" columnsM="2" labelSpanM="4" title="Trip Info" width="calc(100% - 1rem)" class="sapUiSmallMarginBegin">
+                                                <form:content>
+                                                    <Label id="lblDistance" text="Distance"/>
+                                                    <Text id="txtDistance" text="{WA_ADDITIONAL_INFO>DISTANCE},{WA_ADDITIONAL_INFO>UNIT}"/>
+                                                    <Label id="lblPlaneType" text="Plane Type"/>
+                                                    <Text id="txtPlaneType" text="{WA_ADDITIONAL_INFO>PLANETYPE}"/>
+                                                </form:content>
+                                            </form:SimpleForm>
+                                        </l:mainContent>
+                                    </l:DynamicSideContent>
+                                </content>
+                            </IconTabFilter>
+                            <IconTabFilter id="barDetailBookings" icon="sap-icon://notes" key="barDetailBookings">
+                                <content>
+                                    <OverflowToolbar id="oOverflowToolbar" active="true">
+                                        <content>
+                                            <ToolbarSpacer id="oToolbarSpacer"/>
+                                            <SearchField id="inFilterPassenger" placeholder="Passenger" width="200px" liveChange=".onInFilterPassengerLiveChange"/>
+                                            <OverflowToolbarButton id="oOverflowToolbarButton" icon="sap-icon://group-2" press=".onOOverflowToolbarButtonPress"/>
+                                        </content>
+                                    </OverflowToolbar>
+                                    <Table id="tabBooking" items="{IT_SBOOK>/}" growing="true" growingScrollToLoad="true" growingThreshold="100" growingTriggerText="Loading more bookings" headerText="Bookings" noDataText="No bookings">
+                                        <columns>
+                                            <Column id="coltabBookingCARRID" minScreenWidth="Phone">
+                                                <header>
+                                                    <!-- Auto-generated header label for coltabBookingCARRID -->
+                                                    <Label id="coltabBookingCARRID_lbl" text="ID"/>
+                                                </header>
+                                            </Column>
+                                            <Column id="coltabBookingCONNID" minScreenWidth="Phone">
+                                                <header>
+                                                    <!-- Auto-generated header label for coltabBookingCONNID -->
+                                                    <Label id="coltabBookingCONNID_lbl" text="No."/>
+                                                </header>
+                                            </Column>
+                                            <Column id="coltabBookingORDER_DATE" minScreenWidth="Phone">
+                                                <header>
+                                                    <!-- Auto-generated header label for coltabBookingORDER_DATE -->
+                                                    <Label id="coltabBookingORDER_DATE_lbl" text="Book.date"/>
+                                                </header>
+                                            </Column>
+                                            <Column id="coltabBookingPASSNAME" minScreenWidth="Phone">
+                                                <header>
+                                                    <!-- Auto-generated header label for coltabBookingPASSNAME -->
+                                                    <Label id="coltabBookingPASSNAME_lbl" text="Passenger"/>
+                                                </header>
+                                            </Column>
+                                            <Column id="coltabBookingLUGGWEIGHT" hAlign="Right" minScreenWidth="Tablet">
+                                                <header>
+                                                    <!-- Auto-generated header label for coltabBookingLUGGWEIGHT -->
+                                                    <Label id="coltabBookingLUGGWEIGHT_lbl" text="Weight"/>
+                                                </header>
+                                            </Column>
+                                            <Column id="coltabBookingLOCCURAM" hAlign="Right" minScreenWidth="Tablet">
+                                                <header>
+                                                    <!-- Auto-generated header label for coltabBookingLOCCURAM -->
+                                                    <Label id="coltabBookingLOCCURAM_lbl" text="Amount"/>
+                                                </header>
+                                            </Column>
+                                            <Column id="coltabBookingCUSTTYPE" hAlign="Center" minScreenWidth="Tablet">
+                                                <header>
+                                                    <!-- Auto-generated header label for coltabBookingCUSTTYPE -->
+                                                    <Label id="coltabBookingCUSTTYPE_lbl" text="Type"/>
+                                                </header>
+                                            </Column>
+                                            <Column id="coltabBookingSMOKER" hAlign="Center" minScreenWidth="Desktop">
+                                                <header>
+                                                    <!-- Auto-generated header label for coltabBookingSMOKER -->
+                                                    <Label id="coltabBookingSMOKER_lbl" text="Smoker"/>
+                                                </header>
+                                            </Column>
+                                            <Column id="coltabBookingCLASS" hAlign="Center" minScreenWidth="Desktop">
+                                                <header>
+                                                    <!-- Auto-generated header label for coltabBookingCLASS -->
+                                                    <Label id="coltabBookingCLASS_lbl" text="Class"/>
+                                                </header>
+                                            </Column>
+                                            <Column id="coltabBookingCANCELLED" hAlign="Center" minScreenWidth="Desktop">
+                                                <header>
+                                                    <!-- Auto-generated header label for coltabBookingCANCELLED -->
+                                                    <Label id="coltabBookingCANCELLED_lbl" text="Cancelled"/>
+                                                </header>
+                                            </Column>
+                                        </columns>
+                                        <items>
+                                            <ColumnListItem id="colItemtabBooking">
+                                                <cells>
+                                                    <Text id="txttabBookingCARRID" text="{IT_SBOOK>CARRID}"/>
+                                                    <Text id="txttabBookingCONNID" text="{IT_SBOOK>CONNID}"/>
+                                                    <Text id="txttabBookingORDER_DATE" text="{ path: 'IT_SBOOK>ORDER_DATE', type: 'sap.ui.model.type.Date', formatOptions: {source:{pattern:'yyyyMMdd'},pattern:'dd.MM.yyyy'} }"/>
+                                                    <Text id="txttabBookingPASSNAME" text="{IT_SBOOK>PASSNAME}"/>
+                                                    <ObjectNumber id="txttabBookingLUGGWEIGHT" number="{IT_SBOOK>LUGGWEIGHT}" unit="{IT_SBOOK>WUNIT}"/>
+                                                    <ObjectNumber id="txttabBookingLOCCURAM" number="{IT_SBOOK>LOCCURAM}" unit="{IT_SBOOK>LOCCURKEY}"/>
+                                                    <Text id="txttabBookingCUSTTYPE" text="{IT_SBOOK>CUSTTYPE}"/>
+                                                    <Text id="txttabBookingSMOKER" text="{IT_SBOOK>SMOKER}"/>
+                                                    <Text id="txttabBookingCLASS" text="{IT_SBOOK>CLASS}"/>
+                                                    <Text id="txttabBookingCANCELLED" text="{IT_SBOOK>CANCELLED}"/>
+                                                </cells>
+                                            </ColumnListItem>
+                                        </items>
+                                    </Table>
+                                </content>
+                            </IconTabFilter>
+                        </items>
+                    </IconTabBar>
+                </content>
+                <footer>
+                    <Bar id="footerDetail"/>
+                </footer>
+            </Page>
+            <Page id="oPageMessage">
+                <content>
+                    <MessagePage id="oMessage" description="Please check another airline" icon="sap-icon://flight" showHeader="false" text="No flights found"/>
+                </content>
+                <footer>
+                    <Bar id="footerMessage"/>
+                </footer>
+            </Page>
+            <Page id="oPageHidden">
+                <content>
+                    <Text id="txtTranslateHeader" text="Items"/>
+                    <Text id="txtTranslateUpdated" text="Data updated"/>
+                    <Text id="txtTranslateUnit" text="Items"/>
+                    <Text id="txtTranslateSeatsAvail" text="Seats Available"/>
+                    <Text id="txtTranslateNoEconAvail" text="No Economy seats available"/>
+                    <Text id="txtTranslateNoBusiAvail" text="No Business seats available"/>
+                    <Text id="txtTranslateNoFirstAvail" text="No First Class seats available"/>
+                </content>
+            </Page>
+        </detailPages>
+    </SplitApp>
+</mvc:View>
